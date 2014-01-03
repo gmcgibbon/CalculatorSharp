@@ -58,8 +58,8 @@
 
             <Button Name="Clear" Content="C" Grid.Row="0" Grid.Column="0" Click="ClearOperation_Click"/>
             <Button Name="ClearEntry" Content="CE" Grid.Row="0" Grid.Column="1" Click="ClearOperation_Click"/>
-            <Button Name="Sqrt" Content="Sqrt" Grid.Row="0" Grid.Column="2"/>
-            <Button Name="Pow" Content="Pow" Grid.Row="0" Grid.Column="3"/>
+            <Button Name="Sqrt" Content="Sqrt" Grid.Row="0" Grid.Column="2" Click="Sqrt_Click"/>
+            <Button Name="Pow" Content="Pow" Grid.Row="0" Grid.Column="3" Click="Pow_Click"/>
             <Button Name="Backspace" Content="Back" Grid.Row="0" Grid.Column="4" Click="Backspace_Click"/>
 
             <Button Name="Seven" Content="7" Grid.Row="1" Grid.Column="0" Click="Number_Click"/>
@@ -77,7 +77,7 @@
             <Button Name="One" Content="1" Grid.Row="3" Grid.Column="0" Click="Number_Click"/>
             <Button Name="Two" Content="2" Grid.Row="3" Grid.Column="1" Click="Number_Click"/>
             <Button Name="Three" Content="3" Grid.Row="3" Grid.Column="2" Click="Number_Click"/>
-            <Button Name="Bracket" Content="(x)" Grid.Row="3" Grid.Column="3"/>
+            <Button Name="Bracket" Content="(x)" Grid.Row="3" Grid.Column="3" Click="Bracket_Click"/>
             <Button Name="Equal" Content="=" Grid.Row="3" Grid.Column="4" Grid.RowSpan="2" Click="Equal_Click"/>
             
             <Button Name="Zero" Content="0" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Click="Number_Click"/>

@@ -25,8 +25,8 @@ namespace Calculator
     public partial class MainWindow : Window
     {
         private const String ERROR_MESSAGE = "Error";
-
         private bool reset;
+        private bool bracketsClosed;
         private List<KeyValuePair<string,double>> history;
         private CalculationParser parser;
         private ObservableCollection<string> observableHistory;
@@ -43,6 +43,7 @@ namespace Calculator
             observableHistory = new ObservableCollection<string>();
             observableHistory.Add("_Reset");
             reset = true;
+            bracketsClosed = true;
 
             Button_Click(null, null);
 
@@ -64,13 +65,18 @@ namespace Calculator
         {
             if (!Calculation.Text.Equals("0"))
             {
+                if (!bracketsClosed)
+                {
+                    Calculation.Text += ")";
+                    bracketsClosed = true;
+                }
                 try
                 {
                     updateCalcHistory(parser.Evaluate());
                 }
                 catch
                 {
-                    Calculation.Text = "Error";
+                    Calculation.Text = ERROR_MESSAGE;
                     reset = true;
                 }
             }
@@ -120,10 +126,10 @@ namespace Calculator
         {
             var sourceItem = ((MenuItem)e.OriginalSource).DataContext.ToString();
             var sourceIndex = observableHistory.IndexOf(sourceItem)-1;
-
+            
             if (sourceIndex == -1)
             {
-                sourceIndex = 0;
+                sourceIndex++;
                 resetCalc();
             }
             else
@@ -131,11 +137,14 @@ namespace Calculator
                 Calculation.Text = history[sourceIndex].Value.ToString();
             }
 
-            for (var i = sourceIndex; i < history.Count; i++)
+            history.RemoveRange(sourceIndex, history.Count - sourceIndex);
+            observableHistory.Clear();
+            observableHistory.Add("_Reset");
+            foreach (var pair in history)
             {
-                history.RemoveAt(i);
-                observableHistory.RemoveAt((++i));
+                observableHistory.Add(String.Format("{0} = {1}", pair.Key, pair.Value));
             }
+
         }
 
         /// <summary>
@@ -195,14 +204,7 @@ namespace Calculator
         /// <param name="e"></param>
         private void Operation_Click(object sender, RoutedEventArgs e)
         {
-            if (reset)
-            {
-                reset = false;
-            }
-            if (Calculation.Text == ERROR_MESSAGE)
-            {
-                Calculation.Text = "0";
-            }
+            operationCheck();
             Calculation.Text += ((Button)sender).Content;
         }
 
@@ -224,12 +226,72 @@ namespace Calculator
         /// <param name="e"></param>
         private void Backspace_Click(object sender, RoutedEventArgs e)
         {
-            try
+            if (Calculation.Text.Length>0)
             {
-                Calculation.Text = Calculation.Text.Remove(Calculation.Text.Length - 1);
+                if (reset)
+                {
+                    reset = false;
+                    Calculation.Text = "";
+                }
+                else
+                {
+                    Calculation.Text = Calculation.Text.Remove(Calculation.Text.Length - 1);
+                }
             }
-            catch { }
         }
 
+        /// <summary>
+        /// Squre Root button click handler that squre roots the current calculation
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Sqrt_Click(object sender, RoutedEventArgs e)
+        {
+            if (Calculation.Text.Equals(String.Empty))
+            {
+                Calculation.Text = String.Format("{0}({1})", "√", Calculation.Text);
+                Equal_Click(null, null);
+            }
+        }
+
+        /// <summary>
+        /// Bracket button click handler that inserts an opening or closing bracket
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Bracket_Click(object sender, RoutedEventArgs e)
+        {
+            operationCheck();
+            Calculation.Text += bracketsClosed ? "(" : ")";
+            bracketsClosed = !bracketsClosed;
+        }
+
+        /// <summary>
+        /// Power button click handler that adds a caret symbol and opening bracket
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Pow_Click(object sender, RoutedEventArgs e)
+        {
+            operationCheck();
+            bracketsClosed = false;
+            Calculation.Text += "^(";
+        }
+
+        /// <summary>
+        /// Performs reset and calculation text checks upon operation click
+        /// </summary>
+        private void operationCheck()
+        {
+            if (reset)
+            {
+                reset = false;
+                Calculation.Text = "";
+            }
+            if (Calculation.Text == ERROR_MESSAGE)
+            {
+                Calculation.Text = "0";
+            }
+        }
     }
 }
